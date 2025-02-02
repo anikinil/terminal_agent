@@ -131,9 +131,9 @@ def yes_no_prompt():
     while True:
         response = input(colored("Execute? (y/N): ", 'blue')).lower()
         if voicing: stop_voicing()
-        if response == 'y':
+        if response == 'y' or response == 'Y':
             return True
-        elif response == '':
+        elif response == 'n' or response == 'N' or response == '':
             return False
 
 
