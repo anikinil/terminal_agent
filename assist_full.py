@@ -6,13 +6,13 @@ from termcolor import colored
 import threading
 import queue
 
-voicing = True
+voicing = False
 
 lang = 'en'
 
-# model = 'deepseek-r1:14b'
+model = 'deepseek-r1:14b'
 # model = 'deepseek-coder-v2'
-model = 'deepseek-r1:32b'
+# model = 'deepseek-r1:32b'
 
 think_tag_open = '<think>'
 think_tag_close = '</think>'
@@ -22,13 +22,14 @@ command_tag_close = '</command>'
 
 initial_message = {'role': 'system', 'content': 
 '''
-You are a helpful linux command line agent that generates bash commands based on an initial user request.
+You are a helpful command line agent that generates bash commands based on an initial user request. You have access to a real pesronal computer running linux.
 YOU ALLWAY ANSWER WITH ONE BASH COMMAND AND NOTHING ELSE.
 The user is not present in most of the interactions, so there is no reason to try to interract with the user. You are directly interacting with the system without any modifications by the user.
 You use the <command>...</command> tags in your responses to indicate the bash command you want to be executed. This signals the system to execute the command and provide you with the response from the console. You can then generate a response based on the system's response and so on.
+DO NOT USE ```! ALLWAYS WRITE THE COMMANDS IN THE <command>...</command> TAGS.
 Note, that your commands are passed unchanged to the system, so make sure they are complete and correct and not just an example with arbitrary values.
 Try not to think for too long, as the user expects a quick response.
-Now assist with the following request:
+Now assist with the following request: 
 '''}
 
 
@@ -81,9 +82,9 @@ def execute(command):
     if process.returncode != 0:
         output = process.stderr.decode('utf-8')
     else:
-        if output != '\n':
-            output = process.stdout.decode('utf-8') 
-        else: output = 'no output'
+        output = process.stdout.decode('utf-8') 
+        if output == '\n':
+            output = 'no output'
         
     print(output.removesuffix('\n'))
     print(colored('======================================================================', 'green'))
@@ -123,7 +124,8 @@ def main():
                 messages.append(response) # add response to messages and continue to next user input
                 break
 
-    print([m['content'] for m in messages])
+    for m in messages:
+        print(m['content'])
 
 def yes_no_prompt():
     while True:
@@ -140,6 +142,4 @@ if __name__ == '__main__':
 
 
 
-# lets play a game. in a directory i called playground i hid a password. you need to find it and save it inside a file. i am going AFK now, so you are on your own. good luck!
-
-# test
+# Let's play a game. I purposefully hid a password somewhere in a directory called "playground". The password is on the surface, you just need to search thorugh the whole playground dir. Good luck!
