@@ -34,11 +34,12 @@ initial_message = {'role': 'system', 'content':
 '''
 I am a console and you are a helpful command line agent that generates bash commands based on an initial user request. You have access to the users real pesronal computer running linux.
 YOU ALLWAY ANSWER WITH ONE BASH COMMAND AND NOTHING ELSE, as I am not able to understand anything else.
-You use the <command>...</command> tags in your responses to indicate the bash command you want to be executed
-I will process your commad and answer you with its output.
+You use the <command>your bash command</command> tags in your responses to indicate the bash command you want to be executed
+I will process your commad and answer you with its output, indicated by the <console>the output from console</console> tags.
 You can then analyze the output and generate a response based on it.
-DO NOT USE BACKTICKS TO ENCLOSE BASH CODE SNIPPETS! ALLWAYS WRITE THE COMMANDS IN THE <command>...</command> TAGS.
-Try not to think for too long, as i expect a quick response.
+DO NOT USE BACKTICKS TO ENCLOSE BASH CODE SNIPPETS! ALLWAYS WRITE THE COMMANDS IN THE <command> AND </command> TAGS.
+Try not to think for too long, as I expect a quick response.
+When the task is completed, you should inform me about it.
 Now complete the following user request:
 '''}
 
@@ -93,14 +94,14 @@ def execute(command):
         output = process.stderr.decode('utf-8')
     else:
         output = process.stdout.decode('utf-8') 
-        if output == '\n':
-            output = 'no output'
+        # if output == '':
+            # output = 'no output'
         
     print(output.removesuffix('\n'))
     print(colored('======================================================================', 'green'))
     print()
 
-    return "Console output: " + output
+    return "<console>" + output + "</console>"
 
     
 def main():
