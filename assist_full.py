@@ -6,7 +6,7 @@ from termcolor import colored
 import threading
 import queue
 
-voicing = True
+voicing = False
 
 lang = 'en'
 
@@ -21,15 +21,25 @@ command_tag_open = '<command>'
 command_tag_close = '</command>'
 
 initial_message = {'role': 'system', 'content': 
+# '''
+# You are a helpful command line agent that generates bash commands based on an initial user request. You have access to a real pesronal computer running linux.
+# YOU ALLWAY ANSWER WITH ONE BASH COMMAND AND NOTHING ELSE.
+# The user is not present in most of the interactions, so there is no reason to try to interract with the user. You are directly interacting with the system without any modifications by the user.
+# You use the <command>...</command> tags in your responses to indicate the bash command you want to be executed. This signals the system to execute the command and provide you with the response from the console. You can then generate a response based on the system's response and so on.
+# DO NOT USE BACKTICKS TO ENCLOSE BASH CODE SNIPPETS! ALLWAYS WRITE THE COMMANDS IN THE <command>...</command> TAGS.
+# Note, that your commands are passed unchanged to the system, so make sure they are complete and correct and not just an example with arbitrary values.
+# Try not to think for too long, as the user expects a quick response.
+# Now assist with the following request: 
+# '''}
 '''
-You are a helpful command line agent that generates bash commands based on an initial user request. You have access to a real pesronal computer running linux.
-YOU ALLWAY ANSWER WITH ONE BASH COMMAND AND NOTHING ELSE.
-The user is not present in most of the interactions, so there is no reason to try to interract with the user. You are directly interacting with the system without any modifications by the user.
-You use the <command>...</command> tags in your responses to indicate the bash command you want to be executed. This signals the system to execute the command and provide you with the response from the console. You can then generate a response based on the system's response and so on.
+I am a console and you are a helpful command line agent that generates bash commands based on an initial user request. You have access to the users real pesronal computer running linux.
+YOU ALLWAY ANSWER WITH ONE BASH COMMAND AND NOTHING ELSE, as I am not able to understand anything else.
+You use the <command>...</command> tags in your responses to indicate the bash command you want to be executed
+I will process your commad and answer you with its output.
+You can then analyze the output and generate a response based on it.
 DO NOT USE BACKTICKS TO ENCLOSE BASH CODE SNIPPETS! ALLWAYS WRITE THE COMMANDS IN THE <command>...</command> TAGS.
-Note, that your commands are passed unchanged to the system, so make sure they are complete and correct and not just an example with arbitrary values.
-Try not to think for too long, as the user expects a quick response.
-Now assist with the following request: 
+Try not to think for too long, as i expect a quick response.
+Now complete the following user request:
 '''}
 
 
@@ -114,7 +124,7 @@ def main():
                 start = response_content.find(command_tag_open) + len(command_tag_open)
                 end = response_content.find(command_tag_close)
                 command = response_content[start:end].strip()
-                if yes_no_prompt(): # if user agrees to execute
+                if yes_no_prompt(command): # if user agrees to execute
                     messages.append(response) # add response to messages
                     console_output = execute(command) # execute command
                     messages.append({'role': 'user', 'content': console_output}) # add console output to messages
@@ -124,12 +134,11 @@ def main():
                 messages.append(response) # add response to messages and continue to next user input
                 break
 
-    for m in messages:
-        print(m['content'])
+    for m in messages: print(m)
 
-def yes_no_prompt():
+def yes_no_prompt(command):
     while True:
-        response = input(colored("Execute? (y/N): ", 'blue')).lower()
+        response = input(colored("Execute? \"" + command + "\" (y/N): ", 'blue')).lower()
         if voicing: stop_voicing()
         if response == 'y' or response == 'Y':
             return True
